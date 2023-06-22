@@ -10,7 +10,7 @@ type Props = {
 export default function Container({ children }: Props) {
   return (
     <View className="flex flex-col items-center h-full bg-gray-800">
-      <View className="flex-1 w-full bg-white rounded-t-3xl">{children}</View>
+      <View className="flex-1 w-full">{children}</View>
       <Footer />
       <StatusBar style="auto" />
     </View>
