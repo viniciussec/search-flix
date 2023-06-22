@@ -1,25 +1,20 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Movie } from "../App";
 
 type Props = {
-  item: {
-    id: number;
-    title: string;
-    date: string;
-    rating: number;
-    image: string;
-  };
+  item: Movie;
 };
 
 export default function Card({ item }: Props) {
   return (
     <TouchableOpacity className="mt-4 flex flex-row space-x-4 h-64 border-2 border-[#323B45] rounded-md p-4">
-      <Image source={{ uri: item.image }} className="w-32 h-full" />
+      <Image source={{ uri: item.poster_path }} className="w-32 h-full" />
       <View className="justify-between">
         <View className="w-48">
-          <Text className="text-2xl text-white">{item.title}</Text>
-          <Text className="text-gray-400 text-md">{item.date}</Text>
+          <Text className="text-2xl text-white">{item.original_title}</Text>
+          <Text className="text-gray-400 text-md">{item.release_date}</Text>
         </View>
-        <Text className="text-5xl text-green-500">{item.rating}%</Text>
+        <Text className="text-5xl text-green-500">{item.vote_average}%</Text>
       </View>
     </TouchableOpacity>
   );
