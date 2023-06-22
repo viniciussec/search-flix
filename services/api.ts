@@ -2,11 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import * as RootNavigation from '../services/RootNavigation';
 import { StatusCodes } from "http-status-codes";
-
-const API_URL = "https://api.themoviedb.org/3/";
-const TOKEN_STORAGE_KEY = "movie_app_token";
-const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjZmE3YzYxMzgxOGQzZmJmODcxNGI1YmU3ZjhjZjg0OCIsInN1YiI6IjY0ODY4OWUyZTM3NWMwMDBmZjQ5M2M5NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4_jRsSRSdkgs-dYAPbx6X5N1zrApYM9fqiLrTBahS0A";
+import { API_URL, MOVIE_DB_TOKEN, TOKEN_STORAGE_KEY } from "../constants";
 
 const API = axios.create({
   baseURL: API_URL,
@@ -17,7 +13,7 @@ const API = axios.create({
 
 API.interceptors.request.use(
   async function (config) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${MOVIE_DB_TOKEN}`;
 
     return config;
   },
@@ -42,7 +38,6 @@ API.interceptors.response.use(
     ) {
       AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
       AsyncStorage.setItem("session_expired", "true");
-      //   RootNavigation.resetStackAndNavigate('Login');
     }
     return Promise.reject(error);
   }
