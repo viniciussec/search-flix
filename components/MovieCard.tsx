@@ -1,14 +1,21 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { IMAGE_URL } from "../constants";
 import { Movie } from "../types/Movie";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
 
 type Props = {
   item: Movie;
 };
 
-export default function Card({ item }: Props) {
+export default function MovieCard({ item }: Props) {
+  const route = useRoute();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
-    <TouchableOpacity className="mt-4 flex flex-row space-x-4 h-64 border-2 border-[#323B45] rounded-md p-4">
+    <TouchableOpacity className="mt-4 flex flex-row space-x-4 h-64 border-2 border-[#323B45] rounded-md p-4"
+      onPress={() => navigation.navigate("MovieDetails", { movieId: item.id })}>
       <Image
         source={{ uri: IMAGE_URL + item.poster_path }}
         className="w-32 h-full"

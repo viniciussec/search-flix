@@ -1,8 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Card from "../components/Card";
+import { ScrollView, View } from "react-native";
+import MovieCard from "../components/MovieCard";
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import { Movie } from "../types/Movie";
@@ -27,7 +24,7 @@ export default function App() {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="items-center justify-center space-y-10">
             {movies.map((item, index) => (
-              <Card key={index} item={item} />
+              <MovieCard key={index} item={item} />
             ))}
           </View>
         </ScrollView>
