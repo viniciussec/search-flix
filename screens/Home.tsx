@@ -10,7 +10,7 @@ export default function App() {
 
   useEffect(() => {
     async function loadData() {
-      const response = await API.get("discover/movie");
+      const response = await API.get("discover/movie?language=pt-BR'");
 
       setMovies(response.data.results);
     }

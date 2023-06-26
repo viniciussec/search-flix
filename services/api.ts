@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import * as RootNavigation from '../services/RootNavigation';
 import { StatusCodes } from "http-status-codes";
-import { API_URL, MOVIE_DB_TOKEN, TOKEN_STORAGE_KEY } from "../constants";
+import { API_URL, MOVIE_DB_TOKEN, TOKEN_STORAGE_KEY } from "../utils/constants";
 
 const API = axios.create({
   baseURL: API_URL,

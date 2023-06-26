@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../App";
-import { IMAGE_URL } from "../constants";
+import { IMAGE_URL } from "../utils/constants";
 import { MovieDetailed } from "../types/MovieDetailed";
 import { CastMember } from "../types/Credits";
 import CastCard from "../components/CastCard";
+import { formatDate } from "../utils/formatDate";
 
 export default function MovieDetails() {
     const [movie, setMovie] = useState<MovieDetailed>()
@@ -17,9 +18,9 @@ export default function MovieDetails() {
 
     useEffect(function loadMovieData() {
         if (!route.params) return
-        API.get(`/movie/${route.params.movieId}`)
+        API.get(`/movie/${route.params.movieId}?language=pt-BR'`)
             .then((response) => setMovie(response.data))
-        API.get(`/movie/${route.params.movieId}/credits`)
+        API.get(`/movie/${route.params.movieId}/credits?language=pt-BR'`)
             .then((response) => setCast(response.data.cast))
     }, [])
 
@@ -34,14 +35,14 @@ export default function MovieDetails() {
 
     return (
         <Container>
-            <View className="mt-4 flex flex-row space-x-4 h-64 p-4">
+            <View className="flex flex-row h-64 p-4 mt-4 space-x-4">
                 <Image
                     source={{ uri: IMAGE_URL + movie?.poster_path }}
                     className="w-32 h-full"
                 />
-                <View className="w-48 justify-between">
+                <View className="justify-between w-48">
                     <Text className="text-2xl text-white">{movie?.original_title}</Text>
-                    <Text className="text-gray-400 text-md">{movie?.release_date}</Text>
+                    <Text className="text-gray-400 text-md">{formatDate(movie?.release_date)}</Text>
                     <Text className="text-white text-md">{getFormatedRuntime()}</Text>
                     <Text className="text-5xl text-green-500">
                         {Math.round(movie?.vote_average * 10)}%
@@ -60,9 +61,10 @@ export default function MovieDetails() {
                     )}
                     horizontal
                     keyExtractor={genre => String(genre.id)}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
-            <View className="my-2">
+            <View className="px-2 my-2">
                 <Text className="text-white text-md">
                     {movie.overview}
                 </Text>
@@ -75,6 +77,7 @@ export default function MovieDetails() {
                     )}
                     horizontal
                     keyExtractor={member => String(member.id)}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
         </Container>

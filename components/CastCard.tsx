@@ -1,6 +1,6 @@
 import { Image, Text, View } from "react-native";
 import { CastMember } from "../types/Credits";
-import { IMAGE_URL } from "../constants";
+import { IMAGE_URL } from "../utils/constants";
 
 interface Props {
     castMember: CastMember
