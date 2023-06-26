@@ -6,7 +6,7 @@ import Container from "../components/Container";
 export default function Info() {
   return (
     <Container>
-      <ScrollView>
+      <ScrollView className="p-2">
         <Section
           title="Navegação"
           text={`Para navegar entre as telas, clique entre as 3 opções na barra inferior da aplicação (Destaques, procura e ajuda)`}
@@ -33,11 +33,11 @@ interface SectionProps {
 }
 function Section({ title, text }: SectionProps) {
   return (
-    <View className="space-y-4 my-4">
-      <Text className="text-lg text-white">
+    <View className="my-4 space-y-4">
+      <Text className="text-xl text-white">
         {title}
       </Text>
-      <Text className="text-md text-[#CCCCCC]">
+      <Text className="text-lg text-[#CCCCCC]">
         {text}
       </Text>
     </View>
