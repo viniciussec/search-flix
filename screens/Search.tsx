@@ -15,18 +15,27 @@ import MovieCard from "../components/MovieCard";
 
 export default function Info() {
   const [filterModal, setFilterModal] = useState(false);
-
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [filter, setFilter] = useState("");
+  const [order, setOrder] = useState("");
+  const [search, setSearch] = useState("");
+
+  function clearAll() {
+    setFilter("");
+    setOrder("");
+  }
+
+  async function loadData() {
+    const response = await API.get(
+      `search/movie?language=pt-BR&page=1&query=${search}&order=${order}&filter=${filter}`
+    );
+
+    setMovies(response.data.results);
+  }
 
   useEffect(() => {
-    async function loadData() {
-      const response = await API.get("discover/movie?language=pt-BR'");
-
-      setMovies(response.data.results);
-    }
-
     loadData();
-  });
+  }, []);
 
   return (
     <Container>
@@ -35,8 +44,9 @@ export default function Info() {
           <TextInput
             placeholder="Digite aqui para procurar"
             className="w-full h-10 px-4 bg-white rounded-3xl"
+            onChange={(e) => setSearch(e.nativeEvent.text)}
           ></TextInput>
-          <TouchableOpacity className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full">
+          <TouchableOpacity onPress={() => loadData()} className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full">
             <Entypo name="magnifying-glass" size={30} color="white" />
           </TouchableOpacity>
         </View>
@@ -84,26 +94,48 @@ export default function Info() {
             </View>
           </View>
 
-          {/* <View className="w-full h-0.5 my-6 bg-gray-400 rounded-md"></View> */}
-
           <Text className="my-4 text-xl text-white">Ordenação</Text>
           <View className="items-center space-y-4">
-            <TouchableOpacity className="items-center justify-center w-1/2 px-4 py-1 bg-green-600 rounded-3xl">
+            <TouchableOpacity
+              onPress={() => setOrder("vote_average")}
+              className={
+                "items-center justify-center w-1/2 px-4 py-1 rounded-3xl " +
+                (order === "vote_average" ? "bg-green-600" : "bg-green-900")
+              }
+            >
               <Text className="text-white text-md">Nota</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center w-1/2 px-4 py-1 bg-green-600 rounded-3xl">
+            <TouchableOpacity
+              onPress={() => setOrder("views")}
+              className={
+                "items-center justify-center w-1/2 px-4 py-1 rounded-3xl " +
+                (order === "views" ? "bg-green-600" : "bg-green-900")
+              }
+            >
               <Text className="text-white text-md">Visualizações</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center w-1/2 px-4 py-1 bg-green-600 rounded-3xl">
+            <TouchableOpacity
+              onPress={() => setOrder("release_date")}
+              className={
+                "items-center justify-center w-1/2 px-4 py-1 rounded-3xl " +
+                (order === "release_date" ? "bg-green-600" : "bg-green-900")
+              }
+            >
               <Text className="text-white text-md">Lançamento</Text>
             </TouchableOpacity>
           </View>
 
           <View className="flex-row mt-8 space-x-4">
-            <TouchableOpacity className="items-center justify-center flex-1 px-4 py-1 bg-gray-400 rounded-3xl">
+            <TouchableOpacity
+              onPress={() => clearAll()}
+              className="items-center justify-center flex-1 px-4 py-1 bg-gray-400 rounded-3xl"
+            >
               <Text className="text-lg text-white">Limpar</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center flex-1 px-4 py-1 bg-red-600 rounded-3xl">
+            <TouchableOpacity
+              onPress={() => setFilterModal(false)}
+              className="items-center justify-center flex-1 px-4 py-1 bg-red-600 rounded-3xl"
+            >
               <Text className="text-lg text-white">Aplicar</Text>
             </TouchableOpacity>
           </View>

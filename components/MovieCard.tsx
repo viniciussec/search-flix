@@ -31,7 +31,7 @@ export default function MovieCard({ item }: Props) {
           </Text>
         </View>
         <Text className="text-5xl text-green-500">
-          {item.vote_average * 10}%
+          {Math.round(item.vote_average * 10)}%
         </Text>
       </View>
     </TouchableOpacity>

@@ -16,7 +16,7 @@ export default function App() {
     }
 
     loadData();
-  });
+  }, []);
 
   return (
     <Container>
