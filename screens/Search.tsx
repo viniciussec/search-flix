@@ -15,10 +15,12 @@ import MovieCard from "../components/MovieCard";
 import { Genre } from "../types/Genre";
 import SelectDropdown from "react-native-select-dropdown";
 
+type OrderingMode = null | "vote_average" | "views" | "release_date"
+
 export default function Info() {
   const [filterModal, setFilterModal] = useState(false);
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [order, setOrder] = useState("");
+  const [order, setOrder] = useState<OrderingMode>(null);
   const [search, setSearch] = useState("");
 
   const [year, setYear] = useState("")
@@ -27,19 +29,24 @@ export default function Info() {
   const genreDropdownRef = useRef(null)
 
   function clearAll() {
-    setOrder("");
+    setOrder(null);
     setYear("")
     setSelectedGenre(null);
     //@ts-ignore
     genreDropdownRef.current.reset()
   }
 
-  async function loadData() {
+  function handleApplyFilters(){
+    loadMovies()
+    setFilterModal(false)
+  }
+
+  async function loadMovies() {
     let url = `search/movie?language=pt-BR&page=1&query=${search}`
     if (year) url = url + `&primary_release_year=${year}`
     const response = await API.get(url);
-
-    setMovies(filterMovies(response.data.results));
+    const filteredMovies = filterMovies(response.data.results)
+    setMovies(filteredMovies);
   }
   function loadGenreList() {
     API.get(
@@ -61,7 +68,6 @@ export default function Info() {
   }
 
   useEffect(() => {
-    loadData();
     loadGenreList();
   }, []);
 
@@ -73,9 +79,10 @@ export default function Info() {
             placeholder="Digite aqui para procurar"
             className="w-full h-10 px-4 bg-white rounded-3xl"
             onChange={(e) => setSearch(e.nativeEvent.text)}
+            onBlur={()=>loadMovies()}
           ></TextInput>
           <TouchableOpacity
-            onPress={() => loadData()}
+            onPress={() => loadMovies()}
             className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full"
           >
             <Entypo name="magnifying-glass" size={30} color="white" />
@@ -111,6 +118,7 @@ export default function Info() {
                 onSelect={(selectedItem) => setSelectedGenre(selectedItem)}
                 buttonTextAfterSelection={(selectedItem) => selectedItem.name}
                 rowTextForSelection={(item) => item.name}
+                defaultValue={selectedGenre}
                 buttonStyle={{
                   backgroundColor: 'rgb(22 163 74)',
                   borderRadius: 30,
@@ -192,7 +200,7 @@ export default function Info() {
               <Text className="text-lg text-white">Limpar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setFilterModal(false)}
+              onPress={() => handleApplyFilters()}
               className="items-center justify-center flex-1 px-4 py-1 bg-red-600 rounded-3xl"
             >
               <Text className="text-lg text-white">Aplicar</Text>
