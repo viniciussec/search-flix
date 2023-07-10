@@ -1,4 +1,6 @@
 export function formatDate(jsDate: string) {
+  if(!jsDate) return '--';
+
   const date = new Date(jsDate);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;

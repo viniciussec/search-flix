@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -15,14 +15,13 @@ import MovieCard from "../components/MovieCard";
 import { Genre } from "../types/Genre";
 import SelectDropdown from "react-native-select-dropdown";
 
-type OrderingMode = null | "vote_average" | "views" | "release_date";
+type OrderingMode = null | "vote_average" | "popularity" | "release_date";
 
 export default function Info() {
   const [filterModal, setFilterModal] = useState(false);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [order, setOrder] = useState<OrderingMode>(null);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
   const [hasFilter, setHasFilter] = useState(false);
 
   const [year, setYear] = useState("");
@@ -49,6 +48,9 @@ export default function Info() {
     const response = await API.get(url);
     const filteredMovies = filterMovies(response.data.results);
     setMovies(filteredMovies);
+    if (order) {
+      ordernate(filteredMovies, order);
+    }
   }
   function loadGenreList() {
     API.get(
@@ -67,6 +69,25 @@ export default function Info() {
       );
     }
     return filteredMovies;
+  }
+
+  function ordernate(rawMoviesList: Movie[], method: OrderingMode) {
+    let orderedMovies = [...rawMoviesList];
+    if (method === "vote_average") {
+      orderedMovies = orderedMovies.sort(
+        (a, b) => b.vote_average - a.vote_average
+      );
+    } else if (method === "popularity") {
+      orderedMovies = orderedMovies.sort((a, b) => b.popularity - a.popularity);
+    } else if (method === "release_date") {
+      orderedMovies = orderedMovies.sort(
+        (a, b) =>
+          new Date(b.release_date).getTime() -
+          new Date(a.release_date).getTime()
+      );
+    }
+
+    setMovies(orderedMovies);
   }
 
   useEffect(() => {
@@ -201,15 +222,15 @@ export default function Info() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                setOrder("views");
+                setOrder("popularity");
                 setHasFilter(true);
               }}
               className={
                 "items-center justify-center w-1/2 px-4 py-1 rounded-3xl " +
-                (order === "views" ? "bg-green-600" : "bg-green-900")
+                (order === "popularity" ? "bg-green-600" : "bg-green-900")
               }
             >
-              <Text className="text-white text-md">Visualizações</Text>
+              <Text className="text-white text-md">Popularidade</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -233,7 +254,10 @@ export default function Info() {
               <Text className="text-lg text-white">Limpar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleApplyFilters()}
+              onPress={() => {
+                handleApplyFilters();
+                ordernate(movies, order);
+              }}
               className="items-center justify-center flex-1 px-4 py-1 bg-red-600 rounded-3xl"
             >
               <Text className="text-lg text-white">Aplicar</Text>
