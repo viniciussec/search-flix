@@ -22,6 +22,8 @@ export default function Info() {
   const [order, setOrder] = useState("");
   const [search, setSearch] = useState("");
 
+  const [year, setYear] = useState("")
+
   const [genrePickerOpen, setGenrePickerOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
   const [genreOptions, setGenreOptions] = useState<ItemType<string>[]>([])
@@ -31,13 +33,14 @@ export default function Info() {
     setFilter("");
     setOrder("");
     setSelectedGenre(null);
+    setYear("")
   }
 
   async function loadData() {
-    const response = await API.get(
-      `search/movie?language=pt-BR&page=1&query=${search}&order=${order}&filter=${filter}`
-    );
-    
+    let url = `search/movie?language=pt-BR&page=1&query=${search}`
+    if(year) url = url + `&primary_release_year=${year}`
+    const response = await API.get(url);
+
     setMovies(filterMovies(response.data.results));
   }
   function loadGenreList() {
@@ -52,11 +55,11 @@ export default function Info() {
       });
   }
 
-  function filterMovies(rawMoviesList: Movie[]){
+  function filterMovies(rawMoviesList: Movie[]) {
     let filteredMovies = [...rawMoviesList]
-    if(selectedGenre) {
+    if (selectedGenre) {
       const genre = genres.find((genre => genre.name === selectedGenre))
-      if(genre) filteredMovies = filteredMovies.filter((movie)=> movie.genre_ids.includes(genre.id))
+      if (genre) filteredMovies = filteredMovies.filter((movie) => movie.genre_ids.includes(genre.id))
     }
     return filteredMovies
   }
@@ -102,20 +105,25 @@ export default function Info() {
           <Text className="mt-1 mb-4 text-xl text-white">Filtros</Text>
           <View className="flex flex-row justify-between w-full space-x-4">
             <View className="flex flex-col flex-1 space-y-4">
-              <View style={{zIndex:10000}}>
-              <DropDownPicker
-                value={selectedGenre}
-                setValue={setSelectedGenre}
-                open={genrePickerOpen}
-                setOpen={setGenrePickerOpen}
-                items={genreOptions}
-                setItems={setGenreOptions}
-                zIndex={10000}
-              />
+              <View style={{ zIndex: 10000 }}>
+                <DropDownPicker
+                  value={selectedGenre}
+                  setValue={setSelectedGenre}
+                  open={genrePickerOpen}
+                  setOpen={setGenrePickerOpen}
+                  items={genreOptions}
+                  setItems={setGenreOptions}
+                  zIndex={10000}
+                />
               </View>
-              <TouchableOpacity className="items-center justify-center w-full px-6 py-1 bg-green-600 rounded-3xl">
-                <Text className="text-white text-md">Faixa etária</Text>
-              </TouchableOpacity>
+              <TextInput className="
+              items-center justify-center w-full px-6 bg-green-600 rounded-3xl text-white text-md"
+                placeholder="ano"
+                placeholderTextColor="#DDD"
+                value={year}
+                onChange={(e) => setYear(e.nativeEvent.text.replace(/[^0-9]/g, ''))}
+                keyboardType = 'numeric'
+              />
               <TouchableOpacity className="items-center justify-center w-full px-6 py-1 bg-green-600 rounded-3xl">
                 <Text className="text-white text-md">Classificação</Text>
               </TouchableOpacity>

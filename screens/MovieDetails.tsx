@@ -41,7 +41,7 @@ export default function MovieDetails() {
                     className="w-32 h-full"
                 />
                 <View className="justify-between w-48">
-                    <Text className="text-2xl text-white">{movie?.original_title}</Text>
+                    <Text className="text-2xl text-white">{movie?.title}</Text>
                     <Text className="text-gray-400 text-md">{formatDate(movie?.release_date)}</Text>
                     <Text className="text-white text-md">{getFormatedRuntime()}</Text>
                     <Text className="text-5xl text-green-500">

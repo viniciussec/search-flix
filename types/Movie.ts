@@ -6,4 +6,5 @@ export type Movie = {
   poster_path: string;
   release_date: string;
   genre_ids: number[];
+  title: string;
 };

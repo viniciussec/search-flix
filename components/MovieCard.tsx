@@ -25,7 +25,7 @@ export default function MovieCard({ item }: Props) {
       />
       <View className="justify-between">
         <View className="w-48">
-          <Text className="text-2xl text-white">{item.original_title}</Text>
+          <Text className="text-2xl text-white">{item.title}</Text>
           <Text className="text-gray-400 text-md">
             {formatDate(item.release_date)}
           </Text>
