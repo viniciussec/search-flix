@@ -6,6 +6,8 @@ import Header from "./components/Header";
 import Info from "./screens/Info";
 import Search from "./screens/Search";
 import MovieDetails from "./screens/MovieDetails";
+import PersonDetails from "./screens/PersonDetails";
+import { CastMember } from "./types/CastMember";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +16,7 @@ export type RootStackParamList = {
   Search: undefined;
   Info: undefined;
   MovieDetails: { movieId: number };
+  PersonDetails: { person: CastMember };
 };
 
 export default function App() {
@@ -38,6 +41,11 @@ export default function App() {
         <Stack.Screen
           name="MovieDetails"
           component={MovieDetails}
+          options={{ header: () => <Header /> }}
+        />
+        <Stack.Screen
+          name="PersonDetails"
+          component={PersonDetails}
           options={{ header: () => <Header /> }}
         />
       </Stack.Navigator>

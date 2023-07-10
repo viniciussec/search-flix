@@ -5,4 +5,8 @@ export type Movie = {
   vote_average: number;
   poster_path: string;
   release_date: string;
+  genre_ids: number[];
+  title: string;
+  vote_count: number;
+  popularity: number;
 };

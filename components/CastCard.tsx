@@ -1,13 +1,22 @@
-import { Image, Text, View } from "react-native";
-import { CastMember } from "../types/Credits";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { CastMember } from "../types/CastMember";
 import { IMAGE_URL } from "../utils/constants";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
 
 interface Props {
     castMember: CastMember
 }
 export default function CastCard({ castMember }: Props) {
+    const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList, "PersonDetails">>();
+
     return (
-        <View className="mx-2 flex flex-row space-x-4 h-20 bg-[#323B45] rounded-sm">
+        <TouchableOpacity 
+            className="mx-2 flex flex-row space-x-4 h-20 bg-[#323B45] rounded-sm"
+            onPress={() => navigation.navigate("PersonDetails", { person: castMember })}
+        >
             <Image
                 source={{ uri: IMAGE_URL + castMember.profile_path }}
                 className="w-12 h-full"
@@ -22,6 +31,6 @@ export default function CastCard({ castMember }: Props) {
                     castMember.known_for_department}
                 </Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
