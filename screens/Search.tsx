@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -12,56 +12,52 @@ import { Entypo } from "@expo/vector-icons";
 import { Movie } from "../types/Movie";
 import API from "../services/api";
 import MovieCard from "../components/MovieCard";
-import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 import { Genre } from "../types/Genre";
+import SelectDropdown from "react-native-select-dropdown";
 
 export default function Info() {
   const [filterModal, setFilterModal] = useState(false);
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [filter, setFilter] = useState("");
   const [order, setOrder] = useState("");
   const [search, setSearch] = useState("");
 
   const [year, setYear] = useState("")
-
-  const [genrePickerOpen, setGenrePickerOpen] = useState(false)
   const [genres, setGenres] = useState<Genre[]>([])
-  const [genreOptions, setGenreOptions] = useState<ItemType<string>[]>([])
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
+  const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null)
+  const genreDropdownRef = useRef(null)
 
   function clearAll() {
-    setFilter("");
     setOrder("");
-    setSelectedGenre(null);
     setYear("")
+    setSelectedGenre(null);
+    //@ts-ignore
+    genreDropdownRef.current.reset()
   }
 
   async function loadData() {
     let url = `search/movie?language=pt-BR&page=1&query=${search}`
-    if(year) url = url + `&primary_release_year=${year}`
+    if (year) url = url + `&primary_release_year=${year}`
     const response = await API.get(url);
 
     setMovies(filterMovies(response.data.results));
   }
   function loadGenreList() {
-    API.get('https://api.themoviedb.org/3/genre/movie/list?language=pt-BR')
-      .then((response) => {
-        const genreList: Genre[] = response.data.genres
-        setGenres(genreList)
-        setGenreOptions(genreList.map((genre) => ({
-          label: genre.name,
-          value: genre.name
-        })))
-      });
+    API.get(
+      "https://api.themoviedb.org/3/genre/movie/list?language=pt-BR"
+    ).then((response) => {
+      const genreList: Genre[] = response.data.genres;
+      setGenres(genreList);
+    });
   }
 
   function filterMovies(rawMoviesList: Movie[]) {
-    let filteredMovies = [...rawMoviesList]
+    let filteredMovies = [...rawMoviesList];
     if (selectedGenre) {
-      const genre = genres.find((genre => genre.name === selectedGenre))
-      if (genre) filteredMovies = filteredMovies.filter((movie) => movie.genre_ids.includes(genre.id))
+      filteredMovies = filteredMovies.filter((movie) =>
+        movie.genre_ids.includes(selectedGenre.id)
+      );
     }
-    return filteredMovies
+    return filteredMovies;
   }
 
   useEffect(() => {
@@ -78,7 +74,10 @@ export default function Info() {
             className="w-full h-10 px-4 bg-white rounded-3xl"
             onChange={(e) => setSearch(e.nativeEvent.text)}
           ></TextInput>
-          <TouchableOpacity onPress={() => loadData()} className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full">
+          <TouchableOpacity
+            onPress={() => loadData()}
+            className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full"
+          >
             <Entypo name="magnifying-glass" size={30} color="white" />
           </TouchableOpacity>
         </View>
@@ -105,24 +104,39 @@ export default function Info() {
           <Text className="mt-1 mb-4 text-xl text-white">Filtros</Text>
           <View className="flex flex-row justify-between w-full space-x-4">
             <View className="flex flex-col flex-1 space-y-4">
-              <View style={{ zIndex: 10000 }}>
-                <DropDownPicker
-                  value={selectedGenre}
-                  setValue={setSelectedGenre}
-                  open={genrePickerOpen}
-                  setOpen={setGenrePickerOpen}
-                  items={genreOptions}
-                  setItems={setGenreOptions}
-                  zIndex={10000}
-                />
-              </View>
-              <TextInput className="
-              items-center justify-center w-full px-6 bg-green-600 rounded-3xl text-white text-md"
+              <SelectDropdown
+                defaultButtonText="Gênero"
+                data={genres}
+                ref={genreDropdownRef}
+                onSelect={(selectedItem) => setSelectedGenre(selectedItem)}
+                buttonTextAfterSelection={(selectedItem) => selectedItem.name}
+                rowTextForSelection={(item) => item.name}
+                buttonStyle={{
+                  backgroundColor: 'rgb(22 163 74)',
+                  borderRadius: 30,
+                  width: '100%',
+                  height: 30,
+                }}
+                buttonTextStyle={{
+                  color: '#fff',
+                  fontSize: 14,
+                }}
+                dropdownStyle={{
+                  backgroundColor: 'rgb(31 41 55)'
+                }}
+                rowTextStyle={{
+                  color: '#fff'
+                }}
+              />
+              <TextInput className=" 
+                  items-center justify-center w-full px-6 bg-green-600 rounded-3xl 
+                text-white text-md"
                 placeholder="ano"
-                placeholderTextColor="#DDD"
                 value={year}
                 onChange={(e) => setYear(e.nativeEvent.text.replace(/[^0-9]/g, ''))}
-                keyboardType = 'numeric'
+                keyboardType="numeric"
+                placeholderTextColor="#DDD"
+                textAlign="center"
               />
               <TouchableOpacity className="items-center justify-center w-full px-6 py-1 bg-green-600 rounded-3xl">
                 <Text className="text-white text-md">Classificação</Text>
