@@ -14,6 +14,7 @@ import API from "../services/api";
 import MovieCard from "../components/MovieCard";
 import { Genre } from "../types/Genre";
 import SelectDropdown from "react-native-select-dropdown";
+import ActorCard from "../components/ActorCard";
 
 type OrderingMode = null | "vote_average" | "popularity" | "release_date";
 
@@ -28,17 +29,22 @@ export default function Info() {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
   const genreDropdownRef = useRef<any>(null);
+  const [actors, setActors] = useState<any[]>([]);
+  const [isActor, setIsActor] = useState(false);
 
   function clearAll() {
     setOrder(null);
     setYear("");
     setSelectedGenre(null);
     setHasFilter(false);
+    setIsActor(false);
     genreDropdownRef?.current?.reset();
   }
 
   function handleApplyFilters() {
-    loadMovies();
+    if (!isActor) loadMovies();
+    else loadActors();
+
     setFilterModal(false);
   }
 
@@ -52,6 +58,15 @@ export default function Info() {
       ordernate(filteredMovies, order);
     }
   }
+
+  async function loadActors() {
+    const response = await API.get(
+      `search/person?language=pt-BR&query=${search}`
+    );
+    const actors = response.data.results;
+    setActors(actors);
+  }
+
   function loadGenreList() {
     API.get(
       "https://api.themoviedb.org/3/genre/movie/list?language=pt-BR"
@@ -90,6 +105,11 @@ export default function Info() {
     setMovies(orderedMovies);
   }
 
+  async function loadAll() {
+    if (!isActor) loadMovies();
+    else loadActors();
+  }
+
   useEffect(() => {
     loadGenreList();
   }, []);
@@ -102,10 +122,12 @@ export default function Info() {
             placeholder="Digite aqui para procurar"
             className="w-full h-10 px-4 bg-white rounded-3xl"
             onChange={(e) => setSearch(e.nativeEvent.text)}
-            onBlur={() => loadMovies()}
+            onBlur={() => loadAll()}
           ></TextInput>
           <TouchableOpacity
-            onPress={() => loadMovies()}
+            onPress={() => {
+              loadAll();
+            }}
             className="absolute right-0 items-center justify-center w-12 h-12 bg-red-500 rounded-full"
           >
             <Entypo name="magnifying-glass" size={30} color="white" />
@@ -128,16 +150,22 @@ export default function Info() {
             Filtros e ordenação
           </Text>
         </TouchableOpacity>
-        {movies.length === 0 && (
+        {((!isActor && movies.length === 0) ||
+          (isActor && actors.length === 0)) && (
           <View className="items-center justify-center mt-10">
             <Text className="text-lg text-white">Sem resultados</Text>
           </View>
         )}
         <ScrollView showsVerticalScrollIndicator={false}>
           <View className="items-center justify-center mb-20 space-y-10">
-            {movies.map((item, index) => (
-              <MovieCard key={index} item={item} />
-            ))}
+            {!isActor &&
+              movies.map((item, index) => (
+                <MovieCard key={index} item={item} />
+              ))}
+            {isActor &&
+              actors?.map((item, index) => (
+                <ActorCard key={index} item={item} />
+              ))}
           </View>
         </ScrollView>
       </View>
@@ -197,11 +225,28 @@ export default function Info() {
             </View>
             <View className="w-0.5 h-full bg-gray-400 rounded-xl"></View>
             <View className="flex flex-col flex-1 w-1/2 space-y-4">
-              <TouchableOpacity className="items-center justify-center w-full px-6 py-1 bg-green-600 rounded-3xl">
+              <TouchableOpacity
+                className={
+                  "items-center justify-center w-full px-6 py-1 rounded-3xl " +
+                  (isActor ? "bg-green-500" : "bg-green-800")
+                }
+                onPress={() => {
+                  setIsActor(true);
+                  setHasFilter(true);
+                }}
+              >
                 <Text className="text-white text-md">Ator</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="items-center justify-center w-full px-6 py-1 bg-green-600 rounded-3xl">
-                <Text className="text-white text-md">Nome</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsActor(false);
+                }}
+                className={
+                  "items-center justify-center w-full px-6 py-1 rounded-3xl " +
+                  (isActor ? "bg-green-800" : "bg-green-500")
+                }
+              >
+                <Text className="text-white text-md">Filme</Text>
               </TouchableOpacity>
             </View>
           </View>

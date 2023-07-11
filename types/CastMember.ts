@@ -4,6 +4,7 @@ export type CastMember = {
     known_for_department: Department;
     character?: string;
     profile_path: string;
+    popularity: number;
 }
 
 type Department = "Acting" |
